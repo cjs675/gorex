@@ -134,7 +134,7 @@ func (a *App) tabItem(c *ui.Context, k *colors, i int, t *Tab, width float32) {
 // away keeps it, Escape goes back, and an empty name follows the panes
 // again.
 func (a *App) renameField(c *ui.Context, t *Tab, name string) {
-	in := ui.TextInput(c, &a.renameText).Placeholder(name).Grow(1).MinWidth(0).Height(22).FontSize(13).AutoFocus()
+	in := ui.TextInput(c, &a.renameText).TextColor(colorsOf(c).text).Placeholder(name).Grow(1).MinWidth(0).Height(22).FontSize(13).AutoFocus()
 	done := func(keep bool) {
 		if keep {
 			t.Name = strings.TrimSpace(a.renameText)

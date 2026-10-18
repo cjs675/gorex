@@ -335,3 +335,95 @@ func TestPaletteScrolls(t *testing.T) {
 		t.Error("the keys chose a row out of sight")
 	}
 }
+
+func TestAppearance(t *testing.T) {
+	orig := prefs.Appearance
+	defer func() {
+		prefs.Appearance = orig
+		applyAppearance()
+	}()
+
+	a := &App{}
+
+	// Gruvbox Dark
+	a.setAppearance("gruvbox")
+	if prefs.Appearance != "gruvbox" {
+		t.Fatalf("expected appearance gruvbox, got %q", prefs.Appearance)
+	}
+	tt := ui.NewTester(func(c *ui.Context) {
+		k := colorsOf(c)
+		if k != &gruvboxDarkColors {
+			t.Errorf("expected gruvboxDarkColors, got %+v", k)
+		}
+	}, 100, 100)
+	tt.Frame()
+	lt, dt := termThemes()
+	if lt != gruvboxDarkTerm || dt != gruvboxDarkTerm {
+		t.Errorf("expected gruvboxDarkTerm, got %v, %v", lt, dt)
+	}
+
+	// Gruvbox Light
+	a.setAppearance("gruvbox-light")
+	if prefs.Appearance != "gruvbox-light" {
+		t.Fatalf("expected appearance gruvbox-light, got %q", prefs.Appearance)
+	}
+	tt = ui.NewTester(func(c *ui.Context) {
+		k := colorsOf(c)
+		if k != &gruvboxLightColors {
+			t.Errorf("expected gruvboxLightColors, got %+v", k)
+		}
+	}, 100, 100)
+	tt.Frame()
+	lt, dt = termThemes()
+	if lt != gruvboxLightTerm || dt != gruvboxLightTerm {
+		t.Errorf("expected gruvboxLightTerm, got %v, %v", lt, dt)
+	}
+
+	// Light
+	a.setAppearance("light")
+	tt = ui.NewTester(func(c *ui.Context) {
+		k := colorsOf(c)
+		if k != &lightColors {
+			t.Errorf("expected lightColors, got %+v", k)
+		}
+	}, 100, 100)
+	tt.Frame()
+
+	// Dark
+	a.setAppearance("dark")
+	tt = ui.NewTester(func(c *ui.Context) {
+		k := colorsOf(c)
+		if k != &darkColors {
+			t.Errorf("expected darkColors, got %+v", k)
+		}
+	}, 100, 100)
+	tt.Frame()
+
+	// System
+	a.setAppearance("")
+	lt, dt = termThemes()
+	if lt != lightTerm || dt != darkTerm {
+		t.Errorf("expected lightTerm/darkTerm for system, got %v, %v", lt, dt)
+	}
+
+	// Verify text contrast inversion between dark and light themes
+	isDark := func(c ui.Color) bool {
+		return 299*int(c.R)+587*int(c.G)+114*int(c.B) < 128*1000
+	}
+
+	// Dark themes should have light text
+	if isDark(darkColors.text) || isDark(darkTerm.Foreground) || isDark(darkTerm.Palette[7]) || isDark(darkTerm.Palette[15]) {
+		t.Errorf("dark theme text should be light")
+	}
+	if isDark(gruvboxDarkColors.text) || isDark(gruvboxDarkTerm.Foreground) || isDark(gruvboxDarkTerm.Palette[7]) || isDark(gruvboxDarkTerm.Palette[15]) {
+		t.Errorf("gruvbox dark theme text should be light")
+	}
+
+	// Light themes should have dark text
+	if !isDark(lightColors.text) || !isDark(lightTerm.Foreground) || !isDark(lightTerm.Palette[7]) || !isDark(lightTerm.Palette[15]) {
+		t.Errorf("light theme text should be dark (inverted)")
+	}
+	if !isDark(gruvboxLightColors.text) || !isDark(gruvboxLightTerm.Foreground) || !isDark(gruvboxLightTerm.Palette[7]) || !isDark(gruvboxLightTerm.Palette[15]) {
+		t.Errorf("gruvbox light theme text should be dark (inverted)")
+	}
+}

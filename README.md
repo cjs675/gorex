@@ -33,7 +33,7 @@ terminal plugin (Ghostty's libghostty-vt). No webview, no cgo: one ~15 MB app.
   chip, memory, OS and the session server.
 - **Command palette** (⇧⌘P, Ctrl+Shift+P, or the ⌘ button): every command, and every pane
   to jump to, fuzzy-matched.
-- Light and dark appearances (View ▸ Appearance), text size (⌘+ ⌘− ⌘0),
+- Light, dark, Gruvbox and Gruvbox Light appearances (View ▸ Appearance), text size (⌘+ ⌘− ⌘0),
   JetBrains Mono embedded.
 
 ## Shortcuts

@@ -52,10 +52,12 @@ var (
 	cmdBigger      = command{Title: "Bigger Text", Accel: "CmdOrCtrl+=", Keys: "⌘+", Other: shortcut{ui.Ctrl, ui.KeyEqual}, Run: func(a *App) { a.setFontSize(termFont.Size + 1) }}
 	cmdSmaller     = command{Title: "Smaller Text", Accel: "CmdOrCtrl+-", Keys: "⌘−", Other: shortcut{ui.Ctrl, ui.KeyMinus}, Run: func(a *App) { a.setFontSize(termFont.Size - 1) }}
 	cmdActualSize  = command{Title: "Actual Size", Accel: "CmdOrCtrl+0", Keys: "⌘0", Other: shortcut{ui.Ctrl, ui.Key0}, Run: func(a *App) { a.setFontSize(defaultFontSize) }}
-	cmdLight       = command{Title: "Appearance: Light", Run: func(a *App) { a.setAppearance("light") }}
-	cmdDark        = command{Title: "Appearance: Dark", Run: func(a *App) { a.setAppearance("dark") }}
-	cmdSystem      = command{Title: "Appearance: System", Run: func(a *App) { a.setAppearance("") }}
-	cmdEndAll      = command{Title: "Quit and End All Sessions", Accel: "CmdOrCtrl+Alt+Q", Keys: "⌥⌘Q", Run: func(a *App) { a.quitAndEnd() }}
+	cmdLight        = command{Title: "Appearance: Light", Run: func(a *App) { a.setAppearance("light") }}
+	cmdDark         = command{Title: "Appearance: Dark", Run: func(a *App) { a.setAppearance("dark") }}
+	cmdGruvbox      = command{Title: "Appearance: Gruvbox", Run: func(a *App) { a.setAppearance("gruvbox") }}
+	cmdGruvboxLight = command{Title: "Appearance: Gruvbox Light", Run: func(a *App) { a.setAppearance("gruvbox-light") }}
+	cmdSystem       = command{Title: "Appearance: System", Run: func(a *App) { a.setAppearance("") }}
+	cmdEndAll       = command{Title: "Quit and End All Sessions", Accel: "CmdOrCtrl+Alt+Q", Keys: "⌥⌘Q", Run: func(a *App) { a.quitAndEnd() }}
 )
 
 // paletteCommands are those the command palette lists, before the tabs.
@@ -64,7 +66,7 @@ var paletteCommands = []*command{
 	&cmdNextTab, &cmdPrevTab, &cmdRenameTab,
 	&cmdFocusLeft, &cmdFocusRight, &cmdFocusUp, &cmdFocusDown,
 	&cmdGrowLeft, &cmdGrowRight, &cmdGrowUp, &cmdGrowDown,
-	&cmdBigger, &cmdSmaller, &cmdActualSize, &cmdLight, &cmdDark, &cmdSystem,
+	&cmdBigger, &cmdSmaller, &cmdActualSize, &cmdLight, &cmdDark, &cmdGruvbox, &cmdGruvboxLight, &cmdSystem,
 	&cmdClearScroll, &cmdRestart, &cmdEndAll,
 }
 
@@ -191,6 +193,8 @@ func (a *App) menu() *mygo.Menu {
 				appearance("System", ""),
 				appearance("Light", "light"),
 				appearance("Dark", "dark"),
+				appearance("Gruvbox", "gruvbox"),
+				appearance("Gruvbox Light", "gruvbox-light"),
 			}},
 			mygo.Separator(),
 			{Role: mygo.RoleToggleFullScreen},
@@ -414,7 +418,7 @@ func (a *App) palette(c *ui.Context, k *colors) {
 			Shadow(0, 24, 60, -8, ui.RGBA(0, 0, 0, 0.28)).Shadow(0, 2, 6, 0, ui.RGBA(0, 0, 0, 0.06)).Clip()
 		ui.Row(c).Padding(12, 16).Gap(10).AlignItems(ui.Center).BorderWidth(0, 0, 1, 0).BorderColor(k.panelBorder).Children(func() {
 			ui.Icon(c, icon("search")).Size(17, 17).TextColor(k.textFaint)
-			in := ui.TextInputBase(c, &a.paletteQuery).Grow(1).FontSize(15).Placeholder("Type a command, or the name of a pane…").AutoFocus()
+			in := ui.TextInputBase(c, &a.paletteQuery).TextColor(k.text).Grow(1).FontSize(15).Placeholder("Type a command, or the name of a pane…").AutoFocus()
 			if in.Changed() {
 				a.paletteSel, reveal = 0, true
 			}
